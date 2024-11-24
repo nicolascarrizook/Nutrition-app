@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from openai import OpenAI
+import os
+import PyPDF2
 
 # Configuración de la página
 st.set_page_config(
@@ -19,6 +21,28 @@ except Exception as e:
     st.error("Por favor configura la API Key en Streamlit Cloud Settings -> Secrets")
     st.stop()
 
+def load_book_context():
+    try:
+        pdf_path = os.path.join('data', 'libro_nutricion.pdf')
+        with open(pdf_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            text = ""
+            
+            # Mostrar progreso de carga del libro
+            with st.spinner('Cargando base de conocimientos...'):
+                progress_bar = st.progress(0)
+                total_pages = len(pdf_reader.pages)
+                
+                for i, page in enumerate(pdf_reader.pages):
+                    text += page.extract_text()
+                    progress_bar.progress((i + 1) / total_pages)
+                
+                progress_bar.empty()
+            return text
+    except Exception as e:
+        st.error(f"Error cargando el PDF: {str(e)}")
+        return ""
+    
 # Título y descripción
 st.title("🏋️‍♂️ Nutrition AI")
 st.markdown("### Sistema de Análisis y Recomendación Nutricional")
@@ -35,6 +59,16 @@ def collect_basic_data():
         data['peso'] = st.number_input("Peso (kg)", 40, 200)
         data['grasa'] = st.number_input("Porcentaje de grasa corporal", 0, 50)
         data['musculo'] = st.number_input("Porcentaje de músculo", 0, 100)
+        # Agregar ubicación
+        data['pais'] = st.selectbox(
+            "País",
+            ["Argentina", "España", "México", "Colombia", "Chile", "Perú", "Uruguay"]
+        )
+        if data['pais'] == "Argentina":
+            data['provincia'] = st.selectbox(
+                "Provincia",
+                ["Buenos Aires", "Córdoba", "Santa Fe", "Mendoza", "Tucumán", "Entre Ríos", "Salta", "Otras"]
+            )
     
     with col2:
         data['patologia'] = st.multiselect(
@@ -46,6 +80,24 @@ def collect_basic_data():
             ["Proteína", "Creatina", "BCAA", "Ninguna"]
         )
         data['n_comidas'] = st.slider("Número de comidas diarias", 2, 8, 4)
+        
+        # Preferencias alimentarias
+        st.markdown("### 🍽️ Preferencias Alimentarias")
+        
+        # Alimentos que no consume
+        data['no_consume'] = st.multiselect(
+            "No consume/Alergias",
+            ["Lácteos", "Gluten", "Maní", "Huevos", "Pescado", "Mariscos", 
+             "Soja", "Frutos secos", "Cerdo", "Res", "Ninguna restricción"]
+        )
+        
+        # Alimentos preferidos
+        data['preferencias'] = st.multiselect(
+            "Alimentos preferidos",
+            ["Pollo", "Pescado", "Carne roja", "Huevos", "Lácteos", 
+             "Legumbres", "Arroz", "Pasta", "Verduras", "Frutas"]
+        )
+        
         data['analisis_img'] = st.file_uploader(
             "Subir análisis clínico (opcional)", 
             type=['png', 'jpg', 'jpeg']
@@ -92,35 +144,63 @@ def collect_anabolic_data():
 
 def generate_nutrition_plan(user_data):
     try:
-        prompt = f"""
-        Genera un plan nutricional de 3 días para una persona con las siguientes características:
-        - Edad: {user_data['basic']['edad']} años
-        - Peso: {user_data['basic']['peso']} kg
-        - Altura: {user_data['basic']['altura']} cm
-        - % Grasa: {user_data['basic']['grasa']}%
-        - % Músculo: {user_data['basic']['musculo']}%
-        - Actividad física: {', '.join(user_data['activity']['tipo_actividad'])}
-        - Frecuencia: {user_data['activity']['frecuencia']} días/semana
-        - Intensidad: {user_data['activity']['intensidad']}
-        - Patologías: {', '.join(user_data['basic']['patologia'])}
-        - Número de comidas: {user_data['basic']['n_comidas']}
-        
-        El plan debe:
-        1. Mantener el mismo balance calórico los 3 días
-        2. Tener comidas equivalentes en macronutrientes (±10g)
-        3. Incluir opciones de alimentos reales y procesados permitidos
-        4. Especificar marcas recomendadas de suplementos
-        5. Indicar ingredientes a evitar en productos procesados
-        """
-        
-        response = openai.chat.completions.create( 
-            model="gpt-4",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.choices[0].message.content
+        with st.spinner('Generando plan nutricional personalizado...'):
+            prompt = f"""
+            Eres un experto nutricionista que ha estudiado y memorizado completamente el libro que se te proporcionó como base de conocimientos.
+            
+            Genera un plan nutricional de 3 días para una persona de {user_data['basic']['pais']}
+            {f"(provincia de {user_data['basic']['provincia']})" if 'provincia' in user_data['basic'] else ""} 
+            con las siguientes características:
+            
+            DATOS BÁSICOS:
+            - Edad: {user_data['basic']['edad']} años
+            - Peso: {user_data['basic']['peso']} kg
+            - Altura: {user_data['basic']['altura']} cm
+            - % Grasa: {user_data['basic']['grasa']}%
+            - % Músculo: {user_data['basic']['musculo']}%
+            
+            ACTIVIDAD FÍSICA:
+            - Tipo: {', '.join(user_data['activity']['tipo_actividad'])}
+            - Frecuencia: {user_data['activity']['frecuencia']} días/semana
+            - Intensidad: {user_data['activity']['intensidad']}
+            
+            RESTRICCIONES Y PREFERENCIAS:
+            - No consume: {', '.join(user_data['basic']['no_consume'])}
+            - Alimentos preferidos: {', '.join(user_data['basic']['preferencias'])}
+            - Patologías: {', '.join(user_data['basic']['patologia'])}
+            - Número de comidas: {user_data['basic']['n_comidas']}
+            
+            El plan debe:
+            1. Seguir los principios y metodologías del libro
+            2. Mantener el mismo balance calórico los 3 días
+            3. Tener comidas equivalentes en macronutrientes (±10g)
+            4. EVITAR COMPLETAMENTE los alimentos listados en "No consume"
+            5. PRIORIZAR los alimentos listados en "Alimentos preferidos"
+            6. Usar nombres de alimentos y preparaciones comunes en {user_data['basic']['pais']}
+            7. Incluir opciones de compra locales cuando sea posible
+            
+            Formato de respuesta:
+            1. Plan detallado día por día
+            2. Macronutrientes por comida
+            3. Suplementación recomendada según el libro
+            4. Lista de compras con nombres locales de los alimentos
+            5. Notas y recomendaciones específicas
+            """
+            
+            response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "Has estudiado y memorizado completamente el libro de nutrición proporcionado. Usa ese conocimiento como base para tus recomendaciones."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=2000
+            )
+            
+            return response.choices[0].message.content
+            
     except Exception as e:
         return f"Error generando el plan: {str(e)}"
-
+    
 def main():
     # Recolección de datos
     tab1, tab2, tab3 = st.tabs(["Datos Personales", "Actividad Física", "Plan Nutricional"])
