@@ -1,25 +1,26 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import os
 from openai import OpenAI
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Obtener API key desde variables de entorno
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-openai = OpenAI(api_key=OPENAI_API_KEY)
 
 # Configuración de la página
 st.set_page_config(
-    page_title="NutriSport AI",
+    page_title="Nutrition AI",
     page_icon="🏋️‍♂️",
     layout="wide"
 )
 
+# Obtener API key desde Streamlit Secrets
+try:
+    openai = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    st.sidebar.success("API Key cargada correctamente")
+except Exception as e:
+    st.sidebar.error("API Key no encontrada")
+    st.error("Por favor configura la API Key en Streamlit Cloud Settings -> Secrets")
+    st.stop()
+
 # Título y descripción
-st.title("🏋️‍♂️ Nutricion AI")
+st.title("🏋️‍♂️ Nutrition AI")
 st.markdown("### Sistema de Análisis y Recomendación Nutricional")
 
 def collect_basic_data():
@@ -112,7 +113,6 @@ def generate_nutrition_plan(user_data):
         5. Indicar ingredientes a evitar en productos procesados
         """
         
-        
         response = openai.chat.completions.create( 
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}]
@@ -152,12 +152,6 @@ def main():
                     file_name="plan_nutricional.txt",
                     mime="text/plain"
                 )
-
-# Verificación de API key
-if OPENAI_API_KEY:
-    st.sidebar.success("API Key cargada correctamente")
-else:
-    st.sidebar.warning("API Key no encontrada en .env")
 
 if __name__ == "__main__":
     main()
