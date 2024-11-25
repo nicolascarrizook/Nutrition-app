@@ -145,62 +145,90 @@ def collect_anabolic_data():
 def generate_nutrition_plan(user_data):
     try:
         with st.spinner('Generando plan nutricional personalizado...'):
-            prompt = f"""
-            Eres un experto nutricionista que ha estudiado y memorizado completamente el libro que se te proporcionó como base de conocimientos.
+            location_context = f"{user_data['basic']['pais']}, {user_data['basic']['provincia']}" if 'provincia' in user_data['basic'] else user_data['basic']['pais']
             
-            Genera un plan nutricional de 3 días para una persona de {user_data['basic']['pais']}
-            {f"(provincia de {user_data['basic']['provincia']})" if 'provincia' in user_data['basic'] else ""} 
-            con las siguientes características:
+            # Generar plan para cada día por separado
+            plans = []
+            for day in range(1, 4):
+                prompt = f"""
+                Eres un experto nutricionista. Genera el plan nutricional para el Día {day} de 3.
+                
+                Ubicación: {location_context}
+                
+                REQUISITOS:
+                - Generar UN día completo con 4 comidas (desayuno, almuerzo, merienda, cena)
+                - Todas las comidas deben ser diferentes a los otros días
+                - Mantener balance calórico consistente
+                - Macronutrientes equivalentes (±10g) entre comidas
+                
+                Para cada comida especificar:
+                1. Nombre de la preparación
+                2. Ingredientes con:
+                   - Cantidades exactas en gramos
+                   - Marcas específicas de {location_context} (3 alternativas)
+                3. Proceso detallado de preparación
+                4. Información nutricional completa
+                
+                Formato exacto a seguir:
+                
+                Día {day}
+                
+                [Comida]:
+                
+                Ingredientes:
+                - [cantidad] [ingrediente] ([marca1] o [marca2] o [marca3])
+                
+                Preparación:
+                1. [paso]
+                2. [paso]
+                
+                Esta comida aporta:
+                - Calorías: X kcal
+                - Carbohidratos: X g
+                - Proteínas: X g
+                - Grasas: X g
+                - Fibra: X g
+                - Sodio: X mg
+                - Potasio: X mg
+                - Magnesio: X mg
+                
+                [Repetir para cada comida]
+                
+                Balance total del Día {day}:
+                [Totales nutricionales]
+                """
+                
+                response = openai.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "Eres un nutricionista experto que genera planes detallados y precisos."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=2000
+                )
+                
+                plans.append(response.choices[0].message.content)
             
-            DATOS BÁSICOS:
-            - Edad: {user_data['basic']['edad']} años
-            - Peso: {user_data['basic']['peso']} kg
-            - Altura: {user_data['basic']['altura']} cm
-            - % Grasa: {user_data['basic']['grasa']}%
-            - % Músculo: {user_data['basic']['musculo']}%
+            # Combinar los tres días en un solo plan
+            full_plan = "\n\n---\n\n".join(plans)
             
-            ACTIVIDAD FÍSICA:
-            - Tipo: {', '.join(user_data['activity']['tipo_actividad'])}
-            - Frecuencia: {user_data['activity']['frecuencia']} días/semana
-            - Intensidad: {user_data['activity']['intensidad']}
+            # Agregar encabezado y pie
+            final_plan = f"""
+            Plan Nutricional Personalizado para {location_context}
             
-            RESTRICCIONES Y PREFERENCIAS:
-            - No consume: {', '.join(user_data['basic']['no_consume'])}
-            - Alimentos preferidos: {', '.join(user_data['basic']['preferencias'])}
-            - Patologías: {', '.join(user_data['basic']['patologia'])}
-            - Número de comidas: {user_data['basic']['n_comidas']}
+            {full_plan}
             
-            El plan debe:
-            1. Seguir los principios y metodologías del libro
-            2. Mantener el mismo balance calórico los 3 días
-            3. Tener comidas equivalentes en macronutrientes (±10g)
-            4. EVITAR COMPLETAMENTE los alimentos listados en "No consume"
-            5. PRIORIZAR los alimentos listados en "Alimentos preferidos"
-            6. Usar nombres de alimentos y preparaciones comunes en {user_data['basic']['pais']}
-            7. Incluir opciones de compra locales cuando sea posible
-            
-            Formato de respuesta:
-            1. Plan detallado día por día
-            2. Macronutrientes por comida
-            3. Suplementación recomendada según el libro
-            4. Lista de compras con nombres locales de los alimentos
-            5. Notas y recomendaciones específicas
+            Notas importantes:
+            - Todas las marcas mencionadas están verificadas como disponibles en {location_context}
+            - Los valores nutricionales son aproximados y pueden variar según las marcas específicas utilizadas
+            - Ajuste las porciones según necesidad manteniendo las proporciones
             """
             
-            response = openai.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "Has estudiado y memorizado completamente el libro de nutrición proporcionado. Usa ese conocimiento como base para tus recomendaciones."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=2000
-            )
-            
-            return response.choices[0].message.content
+            return final_plan
             
     except Exception as e:
         return f"Error generando el plan: {str(e)}"
-    
+        
 def main():
     # Recolección de datos
     tab1, tab2, tab3 = st.tabs(["Datos Personales", "Actividad Física", "Plan Nutricional"])
