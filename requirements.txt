@@ -4,4 +4,3 @@ python-dotenv
 pandas
 numpy
 PyPDF2
-fpdf==2.7.0
