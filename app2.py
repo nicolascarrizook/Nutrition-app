@@ -4,7 +4,6 @@ import numpy as np
 from openai import OpenAI
 import os
 import PyPDF2
-from fpdf import FPDF
 import io
 
 # Configuración de la página
