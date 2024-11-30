@@ -4,6 +4,8 @@ import numpy as np
 from openai import OpenAI
 import os
 import PyPDF2
+from fpdf import FPDF
+import io
 
 # Configuración de la página
 st.set_page_config(
@@ -283,9 +285,9 @@ def generate_nutrition_plan(user_data):
             calorias_por_comida_principal = calorias_objetivo / total_comidas
             calorias_por_colacion = 0
 
-        # Macros por comida principal (distribución equitativa)
+        # Calcular macros por comida principal (distribución equitativa)
         macros_por_comida = {
-            'proteinas': gramos_proteina / total_comidas,
+            'proteinas': gramos_proteina / total_comidas,  # Distribución exactamente igual
             'carbos': gramos_carbos / total_comidas,
             'grasas': gramos_grasa / total_comidas
         }
@@ -358,11 +360,14 @@ def generate_nutrition_plan(user_data):
             - Grasas: {int(gramos_grasa)}g
 
             DISTRIBUCIÓN DE COMIDAS PRINCIPALES:
-            Cada comida principal debe contener EXACTAMENTE:
+            IMPORTANTE: TODAS las comidas principales deben contener EXACTAMENTE:
             - Valor calórico: {int(calorias_por_comida_principal)} kcal (±20 kcal)
             - Proteínas: {int(macros_por_comida['proteinas'])}g (±3g)
             - Hidratos: {int(macros_por_comida['carbos'])}g (±3g)
             - Grasas: {int(macros_por_comida['grasas'])}g (±2g)
+
+            NOTA CRÍTICA: Cada comida principal (Desayuno, Almuerzo, Merienda, Cena) debe mantener 
+            EXACTAMENTE la misma distribución de macronutrientes. NO reducir proteínas en ninguna comida.
 
             {f'''DISTRIBUCIÓN DE COLACIONES:
             
@@ -497,6 +502,64 @@ def generate_nutrition_plan(user_data):
     except Exception as e:
         return f"Error generando el plan: {str(e)}"
         
+def create_pdf(content):
+    try:
+        # Crear PDF
+        pdf = FPDF()
+        pdf.add_page()
+        
+        # Configurar fuente y márgenes
+        pdf.set_font("Arial", size=10)  # Reducido de 12 a 10
+        pdf.set_margins(20, 20, 20)  # Márgenes más pequeños
+        
+        # Agregar título
+        pdf.set_font("Arial", "B", 14)  # Reducido de 16 a 14
+        pdf.cell(0, 10, txt="Plan Nutricional Personalizado", ln=True, align='C')
+        
+        # Restaurar fuente normal
+        pdf.set_font("Arial", size=10)
+        
+        # Procesar el contenido línea por línea
+        for line in content.split('\n'):
+            # Limpiar la línea
+            clean_line = line.strip()
+            if not clean_line:
+                continue
+                
+            # Codificar el texto para manejar caracteres especiales
+            encoded_line = clean_line.encode('latin-1', 'replace').decode('latin-1')
+            
+            # Calcular el ancho efectivo de la página
+            effective_width = pdf.w - 2 * pdf.l_margin
+            
+            # Si la línea es muy larga, dividirla en múltiples líneas
+            if pdf.get_string_width(encoded_line) > effective_width:
+                words = encoded_line.split()
+                current_line = ""
+                
+                for word in words:
+                    # Verificar si agregar la siguiente palabra excedería el ancho
+                    test_line = current_line + " " + word if current_line else word
+                    if pdf.get_string_width(test_line) <= effective_width:
+                        current_line = test_line
+                    else:
+                        # Escribir la línea actual y comenzar una nueva
+                        pdf.multi_cell(0, 5, txt=current_line, align='L')
+                        current_line = word
+                
+                # Escribir la última línea si queda algo
+                if current_line:
+                    pdf.multi_cell(0, 5, txt=current_line, align='L')
+            else:
+                # La línea cabe en el ancho disponible
+                pdf.multi_cell(0, 5, txt=encoded_line, align='L')
+        
+        # Retornar el PDF como bytes
+        return pdf.output(dest='S').encode('latin-1')
+    except Exception as e:
+        st.error(f"Error creando PDF: {str(e)}")
+        return None
+
 def main():
     # Recolección de datos
     tab1, tab2, tab3 = st.tabs(["Datos Personales", "Actividad Física", "Plan Nutricional"])
@@ -521,9 +584,9 @@ def main():
                 st.markdown("### 🤖 Plan Nutricional Personalizado")
                 st.markdown(plan)
                 
-                # Botón para descargar el plan
+                # Botón para descargar el plan en formato texto
                 st.download_button(
-                    label="Descargar Plan",
+                    label="Descargar Plan (TXT)",
                     data=plan,
                     file_name="plan_nutricional.txt",
                     mime="text/plain"
