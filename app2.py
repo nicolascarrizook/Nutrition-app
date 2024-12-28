@@ -5,6 +5,7 @@ from openai import OpenAI
 import os
 import PyPDF2
 import io
+from vector_db import VectorDBManager
 
 # Configuración de la página
 st.set_page_config(
@@ -13,13 +14,14 @@ st.set_page_config(
     layout="wide"
 )
 
-# Obtener API key desde Streamlit Secrets
+# Obtener API key desde Streamlit Secrets e inicializar servicios
 try:
     openai = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-    st.sidebar.success("API Key cargada correctamente")
+    db_manager = VectorDBManager()
+    st.sidebar.success("API Key y Base de Conocimientos cargadas correctamente")
 except Exception as e:
-    st.sidebar.error("API Key no encontrada")
-    st.error("Por favor configura la API Key en Streamlit Cloud Settings -> Secrets")
+    st.sidebar.error("Error en la inicialización")
+    st.error("Por favor configura las API Keys en Streamlit Cloud Settings -> Secrets")
     st.stop()
 
 def load_book_context():
@@ -29,7 +31,6 @@ def load_book_context():
             pdf_reader = PyPDF2.PdfReader(file)
             text = ""
             
-            # Mostrar progreso de carga del libro
             with st.spinner('Cargando base de conocimientos...'):
                 progress_bar = st.progress(0)
                 total_pages = len(pdf_reader.pages)
@@ -325,19 +326,63 @@ def generate_nutrition_plan(user_data):
             }
         }
 
-        # Generar planes para cada día
-        plans = []
+        # NUEVO: Obtener conocimiento relevante de la base de datos vectorial
+        queries = [
+            # Queries basadas en objetivo principal
+            f"nutrición para {user_data['basic']['objetivo_principal']}",
+            f"plan nutricional {user_data['basic']['objetivo_principal']}",
+            
+            # Queries basadas en patologías
+            *(f"recomendaciones nutricionales para {patologia}" 
+              for patologia in user_data['basic']['patologia'] 
+              if patologia != "Ninguna"),
+            
+            # Queries basadas en actividad física
+            *(f"nutrición para {actividad}" 
+              for actividad in user_data['activity']['tipo_actividad']),
+            
+            # Queries basadas en objetivos secundarios
+            *(f"recomendaciones para {objetivo}" 
+              for objetivo in user_data['basic']['objetivos_secundarios']),
+            
+            # Queries específicas para macros
+            f"distribución de macronutrientes para {user_data['basic']['objetivo_peso']}",
+            f"requerimientos de proteína {user_data['basic']['objetivo_proteina']}",
+            
+            # Queries específicas para suplementación
+            *(f"suplementación {suplemento}" 
+              for suplemento in user_data['basic']['suplementacion'] 
+              if suplemento != "Ninguna")
+        ]
+        
+        # Obtener y procesar el conocimiento relevante
+        relevant_knowledge = []
+        for query in queries:
+            knowledge = db_manager.search_knowledge(query)
+            relevant_knowledge.extend(knowledge)
+        
+        # Eliminar duplicados y unir el conocimiento
+        unique_knowledge = list(set(relevant_knowledge))
+        nutrition_context = "\n\n".join(unique_knowledge)
+
+        # Preparar el contexto de ubicación
         location_context = f"{user_data['basic']['pais']}, {user_data['basic']['provincia']}" if 'provincia' in user_data['basic'] else user_data['basic']['pais']
 
+        # Generar planes para cada día
+        plans = []
         for day in range(1, 4):
+            # Mantener tu prompt existente pero integrando el conocimiento de Pinecone
             prompt = f"""
+            Basado en el siguiente conocimiento especializado del libro:
+            {nutrition_context}
+            
             Eres un nutricionista deportivo argentino especializado en el Método Tres Días y Carga®️ & Nutrición Evolutiva.
             
             DATOS DEL PACIENTE:
             - Localidad: {location_context}
             - Edad: {user_data['basic']['edad']} años
-            - Peso corporal: {user_data['basic']['peso']} kg
-            - Talla: {user_data['basic']['altura']} cm
+            - Peso corporal: {peso} kg
+            - Talla: {altura} cm
             - Porcentaje de tejido adiposo: {user_data['basic']['grasa']}%
             - Porcentaje de masa muscular: {user_data['basic']['musculo']}%
             - Objetivo Principal: {user_data['basic']['objetivo_principal']}
@@ -482,12 +527,12 @@ def generate_nutrition_plan(user_data):
             """
 
             response = openai.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "Eres un nutricionista experto en el Método Tres Días y Carga®️ & Nutrición Evolutiva, especializado en planes personalizados con opciones equivalentes en macronutrientes."},
+                    {"role": "system", "content": "Eres un nutricionista experto en el Método Tres Días y Carga®️ & Nutrición Evolutiva, especializado en planes personalizados."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=3000,
+                max_tokens=4000,
                 temperature=0.7
             )
             
