@@ -1,12 +1,13 @@
-streamlit
-openai
-pinecone-client
-python-dotenv
-fpdf2
-pandas
-numpy
-PyPDF2
-reportlab
-langchain
-langchain-openai
+streamlit==1.31.0
+openai==1.12.0
+pinecone-client==3.0.2
+python-dotenv==1.0.1
+fpdf2==2.7.8
+pandas==2.2.0
+numpy==1.26.4
+PyPDF2==3.0.1
+reportlab==4.0.9
+langchain==0.1.9
+langchain-openai==0.0.8
+langchain-community==0.0.24
 
