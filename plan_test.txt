@@ -1,0 +1,76 @@
+DÍA 1:
+
+DESAYUNO (7:00):
+- 100g de avena, 100g de plátano, 50g de nueces, 30g de miel
+- Macros: Proteínas 15g, Carbos 80g, Grasas 15g
+- Calorías totales: 500 kcal
+
+ALMUERZO (13:00):
+- 150g de pollo, 200g de arroz integral, 100g de brócoli
+- Macros: Proteínas 35g, Carbos 60g, Grasas 5g
+- Calorías totales: 500 kcal
+
+CENA (21:00):
+- 150g de pescado, 200g de patatas, 50g de aceite de oliva
+- Macros: Proteínas 30g, Carbos 40g, Grasas 20g
+- Calorías totales: 500 kcal
+
+RESUMEN DÍA 1:
+Total Calorías: 1500 kcal
+Total Proteínas: 80g
+Total Carbohidratos: 180g
+Total Grasas: 40g
+
+DÍA 2:
+
+DESAYUNO (7:00):
+- 100g de avena, 100g de manzana, 50g de semillas de chía, 30g de miel
+- Macros: Proteínas 15g, Carbos 75g, Grasas 15g
+- Calorías totales: 500 kcal
+
+ALMUERZO (13:00):
+- 150g de pollo, 200g de quinoa, 100g de zanahoria
+- Macros: Proteínas 35g, Carbos 55g, Grasas 5g
+- Calorías totales: 500 kcal
+
+CENA (21:00):
+- 150g de salmón, 200g de batata, 50g de aceite de oliva
+- Macros: Proteínas 30g, Carbos 45g, Grasas 20g
+- Calorías totales: 500 kcal
+
+RESUMEN DÍA 2:
+Total Calorías: 1500 kcal
+Total Proteínas: 80g
+Total Carbohidratos: 175g
+Total Grasas: 40g
+
+DÍA 3:
+
+DESAYUNO (7:00):
+- 100g de avena, 100g de fresas, 50g de almendras, 30g de miel
+- Macros: Proteínas 15g, Carbos 70g, Grasas 15g
+- Calorías totales: 500 kcal
+
+ALMUERZO (13:00):
+- 150g de pechuga de pollo, 200g de pasta integral, 100g de espinacas
+- Macros: Proteínas 35g, Carbos 65g, Grasas 5g
+- Calorías totales: 500 kcal
+
+CENA (21:00):
+- 150g de merluza, 200g de arroz, 50g de aceite de oliva
+- Macros: Proteínas 30g, Carbos 45g, Grasas 20g
+- Calorías totales: 500 kcal
+
+RESUMEN DÍA 3:
+Total Calorías: 1500 kcal
+Total Proteínas: 80g
+Total Carbohidratos: 180g
+Total Grasas: 40g
+
+DATOS DEL PACIENTE:
+- Peso: 80 kg
+- Altura: 175 cm
+- Edad: 30 años
+- Objetivo: Pérdida de grasa
+- No consume: Lácteos
+- Preferencias: Pollo, Pescado, Arroz

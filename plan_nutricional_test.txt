@@ -1,0 +1,182 @@
+DÍA 1:
+
+DESAYUNO - 07:00 AM
+• Alimentos y porciones:
+  - 50g Avena
+  - 200g Fresas
+  - 30g Mantequilla de maní
+• Macros:
+  - Proteínas: 11g
+  - Carbos: 42g
+  - Grasas: 11g
+• Notas: Cocina la avena con agua y añade las fresas y la mantequilla de maní al final.
+
+MEDIA MAÑANA - 10:00 AM
+• Alimentos y porciones:
+  - 30g Almendras
+  - 1 Manzana (182g)
+• Macros:
+  - Proteínas: 6g
+  - Carbos: 28g
+  - Grasas: 14g
+• Notas: Come las almendras y la manzana como snack.
+
+ALMUERZO - 01:00 PM
+• Alimentos y porciones:
+  - 200g Pollo
+  - 200g Batatas
+  - 100g Espárragos
+• Macros:
+  - Proteínas: 46g
+  - Carbos: 48g
+  - Grasas: 6g
+• Notas: Cocina el pollo a la plancha, las batatas al horno y los espárragos al vapor.
+
+MEDIA TARDE - 04:00 PM
+• Alimentos y porciones:
+  - 2 Huevos (100g)
+  - 1 Plátano (118g)
+• Macros:
+  - Proteínas: 13g
+  - Carbos: 27g
+  - Grasas: 10g
+• Notas: Cocina los huevos a tu gusto y come el plátano como snack.
+
+CENA - 08:00 PM
+• Alimentos y porciones:
+  - 200g Salmón
+  - 200g Brócoli
+  - 50g Quinoa
+• Macros:
+  - Proteínas: 46g
+  - Carbos: 20g
+  - Grasas: 14g
+• Notas: Cocina el salmón a la plancha, el brócoli al vapor y la quinoa hervida.
+
+RESUMEN DEL DÍA 1:
+• Total calorías: 2100 kcal
+• Total proteínas: 122g
+• Total carbos: 165g
+• Total grasas: 55g
+
+DÍA 2:
+
+DESAYUNO - 07:00 AM
+• Alimentos y porciones:
+  - 50g Quinoa
+  - 200g Melón
+  - 30g Almendras
+• Macros:
+  - Proteínas: 11g
+  - Carbos: 40g
+  - Grasas: 13g
+• Notas: Cocina la quinoa con agua y añade el melón y las almendras al final.
+
+MEDIA MAÑANA - 10:00 AM
+• Alimentos y porciones:
+  - 30g Nueces
+  - 1 Pera (178g)
+• Macros:
+  - Proteínas: 6g
+  - Carbos: 29g
+  - Grasas: 16g
+• Notas: Come las nueces y la pera como snack.
+
+ALMUERZO - 01:00 PM
+• Alimentos y porciones:
+  - 200g Pavo
+  - 200g Arroz integral
+  - 100g Zanahorias
+• Macros:
+  - Proteínas: 44g
+  - Carbos: 45g
+  - Grasas: 6g
+• Notas: Cocina el pavo a la plancha, el arroz integral hervido y las zanahorias al vapor.
+
+MEDIA TARDE - 04:00 PM
+• Alimentos y porciones:
+  - 2 Huevos (100g)
+  - 1 Naranja (131g)
+• Macros:
+  - Proteínas: 13g
+  - Carbos: 26g
+  - Grasas: 10g
+• Notas: Cocina los huevos a tu gusto y come la naranja como snack.
+
+CENA - 08:00 PM
+• Alimentos y porciones:
+  - 200g Trucha
+  - 200g Espinacas
+  - 50g Amaranto
+• Macros:
+  - Proteínas: 48g
+  - Carbos: 21g
+  - Grasas: 12g
+• Notas: Cocina la trucha a la plancha, las espinacas al vapor y el amaranto hervido.
+
+RESUMEN DEL DÍA 2:
+• Total calorías: 2098 kcal
+• Total proteínas: 122g
+• Total carbos: 161g
+• Total grasas: 57g
+
+DÍA 3:
+
+DESAYUNO - 07:00 AM
+• Alimentos y porciones:
+  - 50g Amaranto
+  - 200g Piña
+  - 30g Semillas de chía
+• Macros:
+  - Proteínas: 11g
+  - Carbos: 41g
+  - Grasas: 12g
+• Notas: Cocina el amaranto con agua y añade la piña y las semillas de chía al final.
+
+MEDIA MAÑANA - 10:00 AM
+• Alimentos y porciones:
+  - 30g Pistachos
+  - 1 Kiwi (69g)
+• Macros:
+  - Proteínas: 7g
+  - Carbos: 20g
+  - Grasas: 13g
+• Notas: Come los pistachos y el kiwi como snack.
+
+ALMUERZO - 01:00 PM
+• Alimentos y porciones:
+  - 200g Ternera
+  - 200g Patatas
+  - 100g Judías verdes
+• Macros:
+  - Proteínas: 48g
+  - Carbos: 46g
+  - Grasas: 8g
+• Notas: Cocina la ternera a la plancha, las patatas al horno y las judías verdes al vapor.
+
+MEDIA TARDE - 04:00 PM
+• Alimentos y porciones:
+  - 2 Huevos (100g)
+  - 1 Mandarina (88g)
+• Macros:
+  - Proteínas: 13g
+  - Carbos: 19g
+  - Grasas: 10g
+• Notas: Cocina los huevos a tu gusto y come la mandarina como snack.
+
+CENA - 08:00 PM
+• Alimentos y porciones:
+  - 200g Bacalao
+  - 200g Col rizada
+  - 50g Trigo sarraceno
+• Macros:
+  - Proteínas: 46g
+  - Carbos: 21g
+  - Grasas: 6g
+• Notas: Cocina el bacalao a la plancha, la col rizada al vapor y el trigo sarraceno hervido.
+
+RESUMEN DEL DÍA 3:
+• Total calorías: 2100 kcal
+• Total proteínas: 125g
+• Total carbos: 147g
+• Total grasas: 49g

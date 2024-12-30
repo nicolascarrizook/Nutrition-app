@@ -4,3 +4,4 @@ python-dotenv
 pandas
 numpy
 PyPDF2
+reportlab

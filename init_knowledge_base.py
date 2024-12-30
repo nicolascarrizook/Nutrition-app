@@ -6,25 +6,48 @@ def initialize_knowledge_base():
     # Cargar variables de entorno
     load_dotenv()
     
-    # Verificar que tenemos las API keys
-    if not os.getenv("PINECONE_API_KEY"):
-        raise ValueError("No se encontró PINECONE_API_KEY en las variables de entorno")
-    if not os.getenv("OPENAI_API_KEY"):
-        raise ValueError("No se encontró OPENAI_API_KEY en las variables de entorno")
-    
     # Crear instancia del manager
     db_manager = VectorDBManager()
     
     # Procesar el libro de nutrición
     pdf_path = os.path.join('data', 'libro_nutricion.pdf')
     
-    print("Procesando PDF...")
+    print("\nIniciando proceso de indexación...")
+    print(f"Archivo: {pdf_path}")
+    
+    if not os.path.exists(pdf_path):
+        print(f"Error: No se encuentra el archivo en {pdf_path}")
+        return
+    
+    print("\nProcesando PDF...")
     chunks = db_manager.process_pdf(pdf_path)
+    print(f"Se generaron {len(chunks)} chunks del libro")
     
-    print("Creando embeddings y subiendo a Pinecone...")
-    db_manager.create_embeddings_and_upload(chunks)
+    print("\nMuestra de los primeros chunks:")
+    for i, chunk in enumerate(chunks[:3]):
+        print(f"\nChunk {i+1}:")
+        print(chunk.page_content[:200], "...")
     
-    print("Base de conocimientos inicializada exitosamente!")
+    print("\nCreando embeddings y subiendo a Pinecone...")
+    try:
+        # Eliminar índice existente si existe
+        if db_manager.index_name in db_manager.pc.list_indexes().names():
+            db_manager.pc.delete_index(db_manager.index_name)
+        
+        # Crear nuevo índice
+        db_manager.ensure_index_exists()
+        
+        # Procesar y subir el contenido
+        chunks = db_manager.process_pdf(pdf_path)
+        db_manager.create_embeddings_and_upload(chunks)
+        
+        # Verificar la carga
+        stats = db_manager.index.describe_index_stats()
+        print(f"\nVerificación final:")
+        print(f"Total de vectores en Pinecone: {stats.total_vector_count}")
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 if __name__ == "__main__":
     initialize_knowledge_base()
