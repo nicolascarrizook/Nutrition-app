@@ -7,3 +7,5 @@ pandas==2.2.0
 numpy==1.26.4
 PyPDF2==3.0.1
 reportlab==4.0.9
+langchain==0.1.9
+langchain-openai==0.0.8
