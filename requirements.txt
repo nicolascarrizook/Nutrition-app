@@ -1,7 +1,8 @@
 streamlit
 openai
+pinecone-client
 python-dotenv
+fpdf2
 pandas
-numpy
-PyPDF2
+numpyPyPDF2
 reportlab
